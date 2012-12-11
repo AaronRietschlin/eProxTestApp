@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -20,11 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxStatus;
+import com.androidquery.callback.BitmapAjaxCallback;
 import com.eproximiti.testingapp.model.API;
 import com.eproximiti.testingapp.model.Game;
 import com.eproximiti.testingapp.model.GamesResponse;
 import com.google.gson.Gson;
 
+/**
+ * Shows a list of {@link Game}'s.
+ */
 public class GamesFragment extends ListFragment {
 
 	private GamesAdapter mAdapter;
@@ -52,6 +58,7 @@ public class GamesFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 
 		mAdapter = new GamesAdapter(getActivity(), new ArrayList<Game>());
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -80,6 +87,10 @@ public class GamesFragment extends ListFragment {
 		});
 	}
 
+	/**
+	 * The {@link ArrayAdapter} that binds the list of {@link Game}'s to the
+	 * ListView. This is how the OS knows how to display the items.
+	 */
 	private class GamesAdapter extends ArrayAdapter<Game> {
 
 		private List<Game> items;
@@ -109,6 +120,8 @@ public class GamesFragment extends ListFragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder = null;
+			// Android recycles views, thus we check if it's null. If it isn't,
+			// it's being recycled.
 			if (convertView == null) {
 				convertView = mInflater.inflate(R.layout.game_row_item, null);
 				// Set up the Viewholder object and initialize the widgets here.
@@ -132,13 +145,46 @@ public class GamesFragment extends ListFragment {
 			Game game = items.get(position);
 			holder.name.setText(game.name);
 			holder.description.setText(game.description);
-			// Use AQuery to get/cache the image.
-			aq.id(holder.image).progress(holder.progress)
-					.image(game.imageUrl, true, true);
+			setImage(holder, game);
 
 			return convertView;
 		}
 
+		/**
+		 * Sets the rows image.
+		 * 
+		 * @param holder
+		 * @param game
+		 */
+		private void setImage(final ViewHolder holder, Game game) {
+			// Use AQuery to get/cache the image.
+			aq.id(holder.image)
+					.progress(holder.progress)
+					.image(game.imageUrl, true, true)
+					.image(game.imageUrl, true, true, 0, 0,
+							new BitmapAjaxCallback() {
+								@Override
+								public void callback(String url, ImageView iv,
+										Bitmap bm, AjaxStatus status) {
+									// A callback for AQuery that allows you to
+									// do something with the image. There was an
+									// error where the ProgressBar wasn't
+									// disappearing. Thus, we set that here if
+									// it's visible.
+									if (holder.progress.getVisibility() == View.VISIBLE)
+										holder.progress
+												.setVisibility(View.GONE);
+									holder.image.setImageBitmap(bm);
+								}
+							});
+		}
+
+		/**
+		 * Adds all of the given Items to the list binded to the adapter.
+		 * 
+		 * @param list
+		 *            The list to add.
+		 */
 		public void addAll(List<Game> list) {
 			if (items == null) {
 				items = new ArrayList<Game>();
@@ -151,19 +197,29 @@ public class GamesFragment extends ListFragment {
 
 	}
 
+	/**
+	 * An AsyncTask that retrieves the list of Games. You do not want to make
+	 * network calls on the Main/UI thread, thus spawning a new thread is
+	 * necessary. {@link AsyncTask}'s are a great way to do that.
+	 */
 	private class GetGamesTask extends AsyncTask<Void, Void, List<Game>> {
 
 		@Override
 		protected List<Game> doInBackground(Void... params) {
 			String response = API.getListOfGames();
+			// Gson is a JSON library for Java written by Google. We use this to
+			// parse API web service responses
 			Gson gson = new Gson();
 			GamesResponse gameResponse = gson.fromJson(response,
 					GamesResponse.class);
+			if (gameResponse == null)
+				return null;
 			return gameResponse.games;
 		}
 
 		@Override
 		protected void onPostExecute(List<Game> games) {
+			// If the response is null, then something went wrong.
 			if (games == null) {
 				Toast.makeText(getActivity(),
 						"There was an error getting the games.",

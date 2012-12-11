@@ -7,7 +7,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This object holds the data returned by the API. Represents a single node in
- * the array of games.
+ * the array of games. This implements {@link Parcelable} which allows us to
+ * pass this item through a Bundle.
  */
 public class Game implements Parcelable {
 
@@ -20,6 +21,13 @@ public class Game implements Parcelable {
 	@SerializedName("image")
 	public String imageUrl;
 
+	/**
+	 * This constructor takes in a {@link Parcel} which is required for the
+	 * {@link Parcelable} interface to work. The order that you place this in
+	 * MUST be the same as the order in {@link #writeToParcel(Parcel, int)}.
+	 * 
+	 * @param in
+	 */
 	public Game(Parcel in) {
 		id = in.readInt();
 		name = in.readString();

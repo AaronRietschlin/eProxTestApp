@@ -9,6 +9,10 @@ import android.view.MenuItem;
 
 import com.eproximiti.testingapp.model.Game;
 
+/**
+ * This Activity is used only on smaller devices. This houses
+ * {@link GameDetailFragment} and is launched when the user clicks a game.
+ */
 public class GameActivity extends FragmentActivity {
 
 	@Override
@@ -25,6 +29,9 @@ public class GameActivity extends FragmentActivity {
 						GameDetailFragment.newInstance(game)).commit();
 
 		if (canUseActionBar()) {
+			// If the device has an actionbar, set the home as up enabled so
+			// that we can move back to the games activity by clicking the "Up"
+			// button.
 			ActionBar ab = getActionBar();
 			ab.setDisplayHomeAsUpEnabled(true);
 			ab.setHomeButtonEnabled(true);
@@ -34,6 +41,7 @@ public class GameActivity extends FragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (canUseActionBar()) {
+			// If the "Up" button is clicked, go back to the previous screen.
 			if (item.getItemId() == android.R.id.home) {
 				finish();
 			}
@@ -41,6 +49,10 @@ public class GameActivity extends FragmentActivity {
 		return true;
 	}
 
+	/**
+	 * Determins if this device is Honeycomb or greater (thus, can use the
+	 * ActionBar).
+	 */
 	public boolean canUseActionBar() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 	}

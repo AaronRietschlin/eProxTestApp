@@ -24,10 +24,10 @@ import org.apache.http.params.BasicHttpParams;
 import android.util.Log;
 
 /**
- * 
+ * The API class that is used to retrieve the data from the server.
  */
 public class API {
-	private static final String TAG = "BaseAPI";
+	private static final String TAG = "API";
 
 	public static final String URL_DEBUG = "http://testing.eproximiti.com/api/games";
 
@@ -37,6 +37,9 @@ public class API {
 		buildHttpClient();
 	}
 
+	/**
+	 * Builds the {@link HttpClient} that is used to make network calls.
+	 */
 	public static void buildHttpClient() {
 		if (mHttpClient == null) {
 			BasicHttpParams params = new BasicHttpParams();
@@ -125,13 +128,4 @@ public class API {
 
 		return sb.toString();
 	}
-
-	public static class Headers {
-		public static final String AUTHORIZATION = "Authorization";
-		public static final String CONTENT_TYPE = "Content-Type";
-		public static final String CONTENT_TYPE_URLENCODED = "application/x-www-form-urlencoded";
-		public static final String ACCEPT = "Accept";
-		public static final String ACCEPT_JSON = "application/json";
-	}
-
 }

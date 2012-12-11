@@ -1,8 +1,6 @@
 package com.eproximiti.testingapp;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,9 +12,12 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.eproximiti.testingapp.model.Game;
 
+/**
+ * This fragment displays details about the {@link Game}: The name, description
+ * and image.
+ */
 public class GameDetailFragment extends Fragment {
 
-	private LayoutInflater mInflater;
 	private Game mGame;
 	private TextView gameNameTv;
 	private TextView gameDescripTv;
@@ -25,10 +26,21 @@ public class GameDetailFragment extends Fragment {
 
 	public static final String EXTRA_GAME = "game";
 
+	/**
+	 * This is called when a game is clicked. Allows the Fragment and Activity
+	 * to interact. The Activity must implement this for this to work.
+	 */
 	public interface OnGamesItemClickedListener {
 		abstract void itemClicked(Game game);
 	}
 
+	/**
+	 * Constructs an instance of this fragment with the given {@link Game} as
+	 * the game to detail.
+	 * 
+	 * @param game
+	 * @return
+	 */
 	public static GameDetailFragment newInstance(Game game) {
 		GameDetailFragment frag = new GameDetailFragment();
 		Bundle args = new Bundle();
@@ -58,7 +70,6 @@ public class GameDetailFragment extends Fragment {
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View v = inflater.inflate(R.layout.game_fragment, null);
-		mInflater = inflater;
 
 		gameNameTv = (TextView) v.findViewById(R.id.game_detail_name);
 		gameDescripTv = (TextView) v.findViewById(R.id.game_detail_description);
@@ -73,6 +84,9 @@ public class GameDetailFragment extends Fragment {
 		setupUi();
 	}
 
+	/**
+	 * Sets the {@link Game}'s data to the view widgets.
+	 */
 	private void setupUi() {
 		gameNameTv.setText(mGame.name);
 		gameDescripTv.setText(mGame.description);
