@@ -1,10 +1,13 @@
 package com.eproximiti.testingapp;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.eproximiti.testingapp.GamesFragment.OnGamesItemClickedListener;
@@ -15,6 +18,7 @@ public class MainActivity extends FragmentActivity implements
 
 	private boolean isTwoPane;
 	private FrameLayout detailContainer;
+	private Fragment gamesFragment;
 	private FragmentManager fm;
 
 	@Override
@@ -44,17 +48,14 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public void itemClicked(Game game) {
 		GameDetailFragment frag = GameDetailFragment.newInstance(game);
-		FragmentTransaction ft = fm.beginTransaction();
 		if (isTwoPane) {
-			if (fm.getBackStackEntryCount() == 0) {
-				ft.add(R.id.game_fragment, frag);
-			} else {
-				ft.replace(R.id.game_fragment, frag);
-			}
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.replace(R.id.game_fragment, frag);
+			ft.commit();
 		} else {
-			ft.add(frag, "gameDetail");
+			Intent intent = new Intent(this, GameActivity.class);
+			intent.putExtra(GameDetailFragment.EXTRA_GAME, game);
+			startActivity(intent);
 		}
-		ft.commit();
 	}
-
 }

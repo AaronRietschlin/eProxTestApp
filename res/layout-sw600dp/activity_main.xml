@@ -2,20 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     android:weightSum="3"
     tools:context=".MainActivity" >
 
     <fragment
         android:id="@+id/games_fragment"
         android:name="com.eproximiti.testingapp.GamesFragment"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="1.2" />
 
     <FrameLayout
         android:id="@+id/game_fragment"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2" />
+        android:layout_weight="1.8" />
 
 </LinearLayout>

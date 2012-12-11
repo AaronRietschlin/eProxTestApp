@@ -15,9 +15,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidquery.AQuery;
 import com.eproximiti.testingapp.model.API;
 import com.eproximiti.testingapp.model.Game;
 import com.eproximiti.testingapp.model.GamesResponse;
@@ -28,6 +30,11 @@ public class GamesFragment extends ListFragment {
 	private GamesAdapter mAdapter;
 	private OnGamesItemClickedListener mActivity;
 	private LayoutInflater mInflater;
+	/**
+	 * AQuery is a very helpful library that helps download and cache images
+	 * (among many other things).
+	 */
+	private AQuery aq;
 
 	public interface OnGamesItemClickedListener {
 		abstract void itemClicked(Game game);
@@ -37,6 +44,7 @@ public class GamesFragment extends ListFragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mActivity = (OnGamesItemClickedListener) activity;
+		aq = new AQuery(activity);
 	}
 
 	@Override
@@ -85,6 +93,7 @@ public class GamesFragment extends ListFragment {
 			ImageView image;
 			TextView name;
 			TextView description;
+			ProgressBar progress;
 		}
 
 		public GamesAdapter(Context context, List<Game> objects) {
@@ -110,6 +119,9 @@ public class GamesFragment extends ListFragment {
 						.findViewById(R.id.game_item_name);
 				holder.description = (TextView) convertView
 						.findViewById(R.id.game_item_descrip);
+				holder.progress = (ProgressBar) convertView
+						.findViewById(R.id.game_item_progress);
+
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
@@ -120,6 +132,9 @@ public class GamesFragment extends ListFragment {
 			Game game = items.get(position);
 			holder.name.setText(game.name);
 			holder.description.setText(game.description);
+			// Use AQuery to get/cache the image.
+			aq.id(holder.image).progress(holder.progress)
+					.image(game.imageUrl, true, true);
 
 			return convertView;
 		}
